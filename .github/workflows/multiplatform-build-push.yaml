@@ -30,7 +30,8 @@ jobs:
         run: |
           docker build --force-rm \
           --build-arg ARCH=${{ matrix.platforms }} \
-          -t ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ matrix.platforms }} .
+          -t ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ matrix.platforms }} \
+          --platform=linux/${{ matrix.platforms }} .
 
       - name: Push
         run: |

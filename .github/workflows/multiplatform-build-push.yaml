@@ -29,7 +29,7 @@ jobs:
       - name: Build Image (ARCH ${{matrix.platforms}})
         run: |
           docker build --force-rm \
-          --build-arg ARCH=${{ env.ARCH }} \
+          --build-arg ARCH=${{ matrix.platforms }} \
           -t ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ matrix.platforms }} .
 
       - name: Push

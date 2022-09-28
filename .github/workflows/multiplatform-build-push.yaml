@@ -36,12 +36,12 @@ jobs:
         run: |
           docker build --force-rm \
           --build-arg ARCH=${{ env.ARCH }}
-          -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ env.ARCH }} \
-          -f ./Dockerfile
+          -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }} \
+          .
 
       - name: Push
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ env.ARCH }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }}
 
   manifests:
     needs: build
@@ -61,8 +61,8 @@ jobs:
         run: |
           docker manifest create \
           ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-latest \
-          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-amd64 \
-          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-arm64
+          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-amd64 \
+          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-arm64
       - name: Push Manifest
         run: |
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-latest

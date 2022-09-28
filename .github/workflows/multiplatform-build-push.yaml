@@ -19,6 +19,8 @@ jobs:
             arch: amd64
           - os: macos-latest
             arch: arm64
+    env:
+      ARCH: ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -34,12 +36,12 @@ jobs:
         run: |
           docker build --force-rm \
           --build-arg ARCH=${{ matrix.os[arch] }}
-          -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ matrix.os[arch] }} \
+          -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ env.ARCH }} \
           -f ./Dockerfile
 
       - name: Push
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ matrix.os[arch] }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ env.ARCH }}
 
   manifests:
     needs: build

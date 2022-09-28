@@ -1,8 +1,9 @@
-ARG ARCH=
+ARG ARCH=amd64
+
 FROM --platform=$ARCH php:7.4-fpm
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -q -a=$ARCH && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -q -a=$ARCH \
+RUN apt-get update -o APT::Architecture="$ARCH" -o APT::Architectures="$ARCH"
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
     apt-utils curl zip unzip apt-transport-https git \
     locales locales-all
 

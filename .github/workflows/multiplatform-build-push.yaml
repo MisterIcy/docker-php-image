@@ -35,7 +35,7 @@ jobs:
       - name: Build Image
         run: |
           docker build --force-rm \
-          --build-arg ARCH=${{ matrix.os[arch] }}
+          --build-arg ARCH=${{ env.ARCH }}
           -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ env.ARCH }} \
           -f ./Dockerfile
 

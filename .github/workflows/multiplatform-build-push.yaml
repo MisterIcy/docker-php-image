@@ -1,0 +1,68 @@
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: php7.4-fpm
+
+jobs:
+  build:
+    name: Build images
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        include:
+          - os: ubuntu-latest
+            arch: amd64
+          - os: macos-latest
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Image
+        run: |
+          docker build --force-rm \
+          --build-arg ARCH=${{ matrix.os[arch] }}
+          -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ matrix.os[arch] }} \
+          -f ./Dockerfile
+
+      - name: Push
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-${{ matrix.os[arch] }}
+
+  manifests:
+    needs: build
+    name: Build and push manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create Manifests
+        run: |
+          docker manifest create \
+          ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-latest \
+          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-amd64 \
+          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-arm64
+      - name: Push Manifest
+        run: |
+          docker manifest push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-latest
+
+

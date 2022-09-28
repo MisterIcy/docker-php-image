@@ -36,9 +36,8 @@ jobs:
       - name: Build Image
         run: |
           docker build --force-rm \
-          --build-arg ARCH=${{ env.ARCH }}
-          -t ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }} \
-          .
+          --build-arg ARCH=${{ env.ARCH }} \
+          -t ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }} .
 
       - name: Push
         run: |

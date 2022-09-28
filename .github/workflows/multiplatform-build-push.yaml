@@ -4,6 +4,7 @@ on:
       - main
 
 env:
+  REPO_NAME: mistericy
   IMAGE_NAME: php7.4-fpm
 
 jobs:
@@ -36,12 +37,12 @@ jobs:
         run: |
           docker build --force-rm \
           --build-arg ARCH=${{ env.ARCH }}
-          -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }} \
+          -t ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }} \
           .
 
       - name: Push
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }}
+          docker push ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-${{ env.ARCH }}
 
   manifests:
     needs: build
@@ -60,11 +61,11 @@ jobs:
       - name: Create Manifests
         run: |
           docker manifest create \
-          ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-latest \
-          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-amd64 \
-          --amend ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:manifest-arm64
+          ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}-latest \
+          --amend ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-amd64 \
+          --amend ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:manifest-arm64
       - name: Push Manifest
         run: |
-          docker manifest push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}-latest
+          docker manifest push ${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}-latest
 
 
